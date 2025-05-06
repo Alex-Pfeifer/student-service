@@ -1,14 +1,15 @@
 package ait.cohort55.student.dao;
 
 import ait.cohort55.student.model.Student;
+import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class StudentRepositoryImpl implements StudentRepository {
-    private Map<Long, Student> students = new ConcurrentHashMap<>();
+    private final Map<Long, Student> students = new ConcurrentHashMap<>();
 
     @Override
     public Student save(Student student) {
@@ -17,12 +18,12 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     @Override
-    public Optional<Student> findById(long id) {
+    public Optional<Student> findById(Long id) {
         return Optional.ofNullable(students.get(id));
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         students.remove(id);
     }
 

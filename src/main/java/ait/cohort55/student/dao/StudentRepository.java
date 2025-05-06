@@ -7,10 +7,9 @@ import java.util.Optional;
 public interface StudentRepository {
     Student save(Student student);
 
-    Optional<Student> findById(long id);
+    Optional<Student> findById(Long id);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 
     Iterable<Student> findAll();
-
 }

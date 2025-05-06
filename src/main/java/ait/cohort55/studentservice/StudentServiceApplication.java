@@ -1,4 +1,4 @@
-package ait.cohort55.studentservice;
+package ait.cohort55;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

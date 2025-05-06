@@ -3,7 +3,8 @@ package ait.cohort55.student.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class Student {
@@ -20,8 +21,8 @@ public class Student {
         this.password = password;
         scores = new HashMap<>();
     }
+
     public boolean addScore(String exam, int score) {
         return scores.put(exam, score) == null;
     }
-
 }
