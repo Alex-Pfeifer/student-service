@@ -1,14 +1,16 @@
 package ait.cohort55.student.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
+@Getter
 public class Student {
     private long id;
-    @Getter
+    @Setter
     private String name;
-    @Getter
+    @Setter
     private String password;
     private Map<String, Integer> scores;
 
