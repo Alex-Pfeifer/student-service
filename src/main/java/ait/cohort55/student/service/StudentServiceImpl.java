@@ -10,13 +10,9 @@ import ait.cohort55.student.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
+import java.util.stream.StreamSupport;
 
 @Component
 public class StudentServiceImpl implements StudentService {
@@ -43,56 +39,47 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto removeStudent(Long id) {
         Student student = studentRepository.findById(id).orElseThrow(StudentNotFoundException::new);
         studentRepository.deleteById(id);
-        return new StudentDto(student.getId(), student.getName(), student.getScores());
+        return new StudentDto(id, student.getName(), student.getScores());
     }
 
     @Override
     public StudentAddDto updateStudent(Long id, StudentUpdateDto studentUpdateDto) {
         Student student = studentRepository.findById(id).orElseThrow(StudentNotFoundException::new);
-        student.setName(studentUpdateDto.getName());
-        student.setPassword(studentUpdateDto.getPassword());
-        studentRepository.save(student);
-        return new StudentAddDto();
+        if (studentUpdateDto.getName() != null) {
+            student.setName(studentUpdateDto.getName());
+        }
+        if (studentUpdateDto.getPassword() != null) {
+            student.setPassword(studentUpdateDto.getPassword());
+        }
+        return new StudentAddDto(student.getId(), student.getName(), student.getPassword());
     }
 
     @Override
     public Boolean addScore(Long id, ScoreDto scoreDto) {
         Student student = studentRepository.findById(id).orElseThrow(StudentNotFoundException::new);
-        student.addScore(scoreDto.getExamName(), scoreDto.getScore());
-        studentRepository.save(student);
-        return true;
+        return student.addScore(scoreDto.getExamName(), scoreDto.getScore());
     }
 
     @Override
     public List<StudentDto> findStudentsByName(String name) {
-        List<StudentDto> result = new ArrayList<>();
-        for (Student student : studentRepository.findAll()) {
-            if (student.getName().equals(name)) {
-                result.add(new StudentDto(student.getId(), student.getName(), student.getScores()));
-            }
-        }
-        return result;
+        return StreamSupport.stream(studentRepository.findAll().spliterator(), false)
+                .filter(s -> name.equalsIgnoreCase(s.getName()))
+                .map(s -> new StudentDto(s.getId(), s.getName(), s.getScores()))
+                .toList();
     }
 
     @Override
     public Long getStudentsQuantityByNames(Set<String> names) {
-        long result = 0;
-        for (Student student : studentRepository.findAll()) {
-            if (names.contains(student.getName())) {
-                result++;
-            }
-        }
-        return result;
+        return StreamSupport.stream(studentRepository.findAll().spliterator(), false)
+                .filter(s -> names.contains(s.getName()))
+                .count();
     }
 
     @Override
     public List<StudentDto> findStudentsByExamNameMinScore(String exam, Integer minScore) {
-        List<StudentDto> result = new ArrayList<>();
-        for (Student student : studentRepository.findAll()) {
-            if (student.getScores().getOrDefault(exam, 0) >= minScore) {
-                result.add(new StudentDto(student.getId(), student.getName(), student.getScores()));
-            }
-        }
-        return result;
+        return StreamSupport.stream(studentRepository.findAll().spliterator(), false)
+                .filter(s -> s.getScores().containsKey(exam) && s.getScores().get(exam) > minScore)
+                .map(s -> new StudentDto(s.getId(), s.getName(), s.getScores()))
+                .toList();
     }
 }
